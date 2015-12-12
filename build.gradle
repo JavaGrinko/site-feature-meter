@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}") 
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
 }
 
@@ -30,10 +30,13 @@ repositories {
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-mongodb')
-    compile('com.vaadin:vaadin-spring-boot-starter:1.0.0')
+    compile 'org.springframework:spring-aspects:4.2.3.RELEASE'
     compile('org.springframework.boot:spring-boot-starter-web')
-    testCompile('org.springframework.boot:spring-boot-starter-test') 
+    compile('com.vaadin:vaadin-spring-boot-starter:1.0.0')
+    compile('cz.jirutka.spring:embedmongo-spring:1.3.1')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
+
 
 dependencyManagement {
 	imports { 

@@ -1,6 +1,6 @@
-package javagrinko.sitefeaturemeter.dom;
+package javagrinko.sitefeaturemeter.dom.yandex;
 
-public class YandexOAuthResponse {
+public class OAuthResponse {
 
     String accessToken;
     long expiresInSeconds;

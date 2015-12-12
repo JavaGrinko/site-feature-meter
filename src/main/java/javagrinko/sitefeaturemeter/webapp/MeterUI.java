@@ -7,8 +7,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import javagrinko.sitefeaturemeter.dom.User;
-import javagrinko.sitefeaturemeter.dom.YandexOAuthResponse;
+import javagrinko.sitefeaturemeter.dom.yandex.OAuthResponse;
 import javagrinko.sitefeaturemeter.services.UserService;
+import javagrinko.sitefeaturemeter.services.YandexService;
 import javagrinko.sitefeaturemeter.webapp.windows.LoginWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -26,18 +27,22 @@ public class MeterUI extends UI {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private YandexService yandexService;
+
     @Override
     protected void init(VaadinRequest request) {
         VerticalLayout verticalLayout = new VerticalLayout();
         setContent(verticalLayout);
         initLogin();
+        yandexService.getCounters();
     }
 
     private void initLogin() {
         User user = userService.getUser();
         if (user == null) {
             String uriFragment = getPage().getUriFragment();
-            YandexOAuthResponse response = conversionService.convert(uriFragment, YandexOAuthResponse.class);
+            OAuthResponse response = conversionService.convert(uriFragment, OAuthResponse.class);
             if (response == null || response.getAccessToken() == null) {
                 loginWindow.show(getUI());
             } else {

@@ -1,15 +1,15 @@
 package javagrinko.sitefeaturemeter.converters;
 
-import javagrinko.sitefeaturemeter.dom.YandexOAuthResponse;
+import javagrinko.sitefeaturemeter.dom.yandex.OAuthResponse;
 import org.springframework.core.convert.converter.Converter;
 
-public class YandexOAuthResponseConverter implements Converter<String, YandexOAuthResponse> {
+public class YandexOAuthResponseConverter implements Converter<String, OAuthResponse> {
     @Override
-    public YandexOAuthResponse convert(String source) {
+    public OAuthResponse convert(String source) {
         if (source == null){
             return null;
         }
-        YandexOAuthResponse yandexOAuthResponse = new YandexOAuthResponse();
+        OAuthResponse OAuthResponse = new OAuthResponse();
         String[] parts = source.split("&");
         for (String part : parts) {
             String[] pair = part.split("=");
@@ -17,18 +17,18 @@ public class YandexOAuthResponseConverter implements Converter<String, YandexOAu
             String value = pair[1];
             switch (argument){
                 case "access_token":
-                    yandexOAuthResponse.setAccessToken(value);
+                    OAuthResponse.setAccessToken(value);
                     break;
                 case "token_type":
-                    yandexOAuthResponse.setTokenType(value);
+                    OAuthResponse.setTokenType(value);
                     break;
                 case "expires_in":
-                    yandexOAuthResponse.setExpiresInSeconds(Long.parseLong(value));
+                    OAuthResponse.setExpiresInSeconds(Long.parseLong(value));
                     break;
                 case "state":
-                    yandexOAuthResponse.setState(value);
+                    OAuthResponse.setState(value);
             }
         }
-        return yandexOAuthResponse;
+        return OAuthResponse;
     }
 }

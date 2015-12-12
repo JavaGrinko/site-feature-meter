@@ -30,10 +30,10 @@ public class MeterUI extends UI {
     protected void init(VaadinRequest request) {
         VerticalLayout verticalLayout = new VerticalLayout();
         setContent(verticalLayout);
-        initUser();
+        initLogin();
     }
 
-    private void initUser() {
+    private void initLogin() {
         User user = userService.getUser();
         if (user == null) {
             String uriFragment = getPage().getUriFragment();

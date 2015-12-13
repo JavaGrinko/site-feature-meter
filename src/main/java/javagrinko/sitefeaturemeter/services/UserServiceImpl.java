@@ -1,5 +1,6 @@
 package javagrinko.sitefeaturemeter.services;
 
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import javagrinko.sitefeaturemeter.dom.User;
 import javagrinko.sitefeaturemeter.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser() {
-        List<User> all = userRepository.findAll();
+        List<User> all = Lists.newArrayList(userRepository.findAll());
         if (all.size() > 0) {
             return all.get(0);
         } else {

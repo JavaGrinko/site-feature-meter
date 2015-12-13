@@ -1,9 +1,7 @@
 package javagrinko.sitefeaturemeter.services;
 
-import javagrinko.sitefeaturemeter.dom.yandex.Counter;
-
-import java.util.List;
+import javagrinko.sitefeaturemeter.dom.yandex.Counters;
 
 public interface YandexService {
-    List<Counter> getCounters();
+    Counters getCounters();
 }

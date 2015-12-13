@@ -35,7 +35,7 @@ public class MeterUI extends UI {
         VerticalLayout verticalLayout = new VerticalLayout();
         setContent(verticalLayout);
         initLogin();
-        yandexService.getCounters();
+        //yandexService.getCounters();
     }
 
     private void initLogin() {

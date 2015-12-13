@@ -1,11 +1,20 @@
 package javagrinko.sitefeaturemeter.dom.yandex;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Counter {
+
     Long id;
-    String owner_login;
-    String htmlCode;
+
+    @JsonProperty("owner_login")
+    String ownerLogin;
+
+    @JsonProperty("code_status")
     String codeStatus;
+
+    @JsonProperty("site")
     String siteName;
+
     String permission;
 
     public Long getId() {
@@ -16,20 +25,12 @@ public class Counter {
         this.id = id;
     }
 
-    public String getOwner_login() {
-        return owner_login;
+    public String getOwnerLogin() {
+        return ownerLogin;
     }
 
-    public void setOwner_login(String owner_login) {
-        this.owner_login = owner_login;
-    }
-
-    public String getHtmlCode() {
-        return htmlCode;
-    }
-
-    public void setHtmlCode(String htmlCode) {
-        this.htmlCode = htmlCode;
+    public void setOwnerLogin(String ownerLogin) {
+        this.ownerLogin = ownerLogin;
     }
 
     public String getCodeStatus() {

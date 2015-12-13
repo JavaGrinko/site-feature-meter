@@ -1,22 +1,26 @@
 package javagrinko.sitefeaturemeter.main;
 
-import com.mongodb.Mongo;
-import cz.jirutka.spring.embedmongo.EmbeddedMongoBuilder;
 import javagrinko.sitefeaturemeter.converters.YandexOAuthResponseConverter;
+import org.h2.server.web.WebServlet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ConversionServiceFactoryBean;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-import java.io.IOException;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 import java.util.HashSet;
 
 @SpringBootApplication
-@EnableMongoRepositories(basePackages = "javagrinko.sitefeaturemeter")
+@EnableJpaRepositories(basePackages = "javagrinko.sitefeaturemeter")
 @ComponentScan("javagrinko.sitefeaturemeter")
 public class SiteFeatureMeterApplication {
     public static void main(String[] args) {
@@ -31,26 +35,47 @@ public class SiteFeatureMeterApplication {
                         "                                                     \n")).run(args);
     }
 
-    @Bean(destroyMethod = "close")
-    public Mongo mongo() throws IOException {
-        return new EmbeddedMongoBuilder()
-                .version("2.4.5")
-                .bindIp("127.0.0.1")
-                .port(12345)
-                .build();
-    }
-
     @Bean
     LocalValidatorFactoryBean validator() {
         return new LocalValidatorFactoryBean();
     }
 
     @Bean
-    ConversionServiceFactoryBean conversionService(){
+    ConversionServiceFactoryBean conversionService() {
         ConversionServiceFactoryBean conversionServiceFactoryBean = new ConversionServiceFactoryBean();
         HashSet<Converter> converters = new HashSet<>();
         converters.add(new YandexOAuthResponseConverter());
         conversionServiceFactoryBean.setConverters(converters);
         return conversionServiceFactoryBean;
+    }
+
+    /*@Bean
+    DataSource dataSource(){
+        return new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .build();
+    }*/
+
+
+    @Bean
+    @Autowired
+    EntityManagerFactory entityManagerFactory(DataSource dataSource){
+        HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
+        hibernateJpaVendorAdapter.setGenerateDdl(true);
+
+        LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactoryBean.setJpaVendorAdapter(hibernateJpaVendorAdapter);
+        entityManagerFactoryBean.setPackagesToScan("javagrinko.sitefeaturemeter.dom");
+        entityManagerFactoryBean.setDataSource(dataSource);
+        entityManagerFactoryBean.afterPropertiesSet();
+
+        return entityManagerFactoryBean.getObject();
+    }
+
+    @Bean
+    public ServletRegistrationBean h2servletRegistration() {
+        ServletRegistrationBean registration = new ServletRegistrationBean(new WebServlet());
+        registration.addUrlMappings("/console/*");
+        return registration;
     }
 }

@@ -1,22 +1,24 @@
 package javagrinko.sitefeaturemeter.dom;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-@Document(collection = "users")
+@Entity(name = "users")
 public class User {
 
-    String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    Integer id;
 
+    @Column
     @NotNull
     String token;
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

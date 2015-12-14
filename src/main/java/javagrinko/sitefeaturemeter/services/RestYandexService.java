@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpSession;
+
 @Service
 public class RestYandexService implements YandexService {
     Logger logger = LoggerFactory.getLogger(RestYandexService.class);
@@ -21,12 +23,12 @@ public class RestYandexService implements YandexService {
     private RestTemplate restTemplate = new RestTemplate();
 
     @Autowired
-    private UserService userService;
+    private HttpSession session;
 
     @Override
     public Counters getCounters() {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "OAuth " + userService.getUser().getToken());
+        httpHeaders.add("Authorization", "OAuth " + session.getAttribute("token"));
         httpHeaders.add("Accept", "application/x-yametrika+json");
         HttpEntity<Object> entity = new HttpEntity<>(httpHeaders);
         ResponseEntity<Counters> exchange = restTemplate.exchange(REST_HOST + COUNTERS, HttpMethod.GET, entity, Counters.class);

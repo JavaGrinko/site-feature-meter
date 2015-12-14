@@ -23,8 +23,13 @@ jar {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+vaadin.widgetset = "webapp.Widgetset"
+
 repositories {
     mavenCentral()
+    maven{
+        url "http://maven.vaadin.com/vaadin-addons"
+    }
 }
 
 
@@ -32,7 +37,9 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile 'org.springframework:spring-aspects:4.2.3.RELEASE'
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile("com.vaadin:vaadin-client-compiled:7.5.5")
     compile('com.vaadin:vaadin-spring-boot-starter:1.0.0')
+    compile('com.vaadin.addon:vaadin-charts:3.0.0-alpha7')
     compile 'com.h2database:h2:1.4.190'
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }

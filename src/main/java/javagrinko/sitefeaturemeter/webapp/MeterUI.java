@@ -1,6 +1,8 @@
 package javagrinko.sitefeaturemeter.webapp;
 
+import com.vaadin.addon.charts.Chart;
 import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.spring.annotation.SpringUI;
@@ -19,6 +21,7 @@ import javax.servlet.http.HttpSession;
 
 @SpringUI
 @Theme("valo")
+@Widgetset("webapp.Widgetset")
 public class MeterUI extends UI {
 
     @Autowired
@@ -41,6 +44,8 @@ public class MeterUI extends UI {
         VerticalLayout verticalLayout = new VerticalLayout();
         setContent(verticalLayout);
         initLogin();
+        Chart chart = new Chart();
+        verticalLayout.addComponent(chart);
     }
 
     private void initLogin() {

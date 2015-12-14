@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Aspect
 @Component
-public class YanceServiceThrowableHandlerAspect {
+public class YandexServiceThrowableHandlerAspect {
 
     @Pointcut("execution(* javagrinko.sitefeaturemeter.services.YandexService.*(..))")
     private void yandexServicePointcut() {

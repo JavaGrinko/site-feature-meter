@@ -44,8 +44,7 @@ public class MeterUI extends UI {
         VerticalLayout verticalLayout = new VerticalLayout();
         setContent(verticalLayout);
         initLogin();
-        Chart chart = new Chart();
-        verticalLayout.addComponent(chart);
+        yandexService.getMetricUsers(null, null, yandexService.getCounters().getCounters().get(0).getId());
     }
 
     private void initLogin() {

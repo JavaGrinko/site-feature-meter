@@ -20,6 +20,10 @@ public class Experiment {
     @Column
     Date startDate;
 
+    @NotNull
+    @Column
+    Long counterId;
+
     public Integer getId() {
         return id;
     }

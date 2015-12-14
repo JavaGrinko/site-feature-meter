@@ -1,16 +1,16 @@
 package javagrinko.sitefeaturemeter.webapp.windows;
 
 import com.vaadin.server.Page;
+import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope("session")
+@UIScope
 public class LoginWindow extends Window {
 
     public static final String CAPTION = "Авторизация";

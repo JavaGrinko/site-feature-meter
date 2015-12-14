@@ -61,6 +61,7 @@ public class MeterUI extends UI {
         if (user == null) {
             String uriFragment = getPage().getUriFragment();
             OAuthResponse response = conversionService.convert(uriFragment, OAuthResponse.class);
+            getPage().setUriFragment(null);
             if (response == null || response.getAccessToken() == null) {
                 loginWindow.show(getUI());
             } else {
@@ -78,7 +79,8 @@ public class MeterUI extends UI {
         } else {
             session.setAttribute("token", user.getToken());
             try {
-                List<Attendance> attendances = yandexService.getAttendances(new SimpleDateFormat("yyyyMMdd").parse("20141210"), new SimpleDateFormat("yyyyMMdd").parse("20151210"), yandexService.getCounters().getCounters().get(1).getId());
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+                List<Attendance> attendances = yandexService.getAttendances(dateFormat.parse("20141210"), dateFormat.parse("20151210"), yandexService.getCounters().getCounters().get(1).getId());
                 DataSeries dataSeries = new DataSeries();
                 for (Attendance attendance : attendances) {
                     List<AttendanceData> data = attendance.getData();

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,12 +33,12 @@ public class RestYandexService implements YandexService {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
     @Autowired
-    private HttpSession session;
+    private UserService userService;
 
     @Override
     public Counters getCounters() {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "OAuth " + session.getAttribute("token"));
+        httpHeaders.add("Authorization", "OAuth " + userService.getUser().getToken());
         httpHeaders.add("Accept", "application/x-yametrika+json");
         HttpEntity<Object> entity = new HttpEntity<>(httpHeaders);
         ResponseEntity<Counters> exchange = restTemplate.exchange(HOST_URL + COUNTERS, HttpMethod.GET, entity, Counters.class);
@@ -50,7 +49,7 @@ public class RestYandexService implements YandexService {
     public List<Attendance> getAttendances(Date startDate, Date endDate, Long counterID) {
         List<Attendance> attendances = new ArrayList<>();
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "OAuth " + session.getAttribute("token"));
+        httpHeaders.add("Authorization", "OAuth " + userService.getUser().getToken());
         httpHeaders.add("Accept", "application/x-yametrika+json");
         UriComponentsBuilder uri = UriComponentsBuilder.fromUriString(HOST_URL)
                 .path(ATTENDANCE)

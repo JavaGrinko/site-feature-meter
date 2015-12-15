@@ -1,38 +1,28 @@
 package javagrinko.sitefeaturemeter.webapp;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.Configuration;
-import com.vaadin.addon.charts.model.DataSeries;
-import com.vaadin.addon.charts.model.DataSeriesItem;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.Widgetset;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
+import javagrinko.sitefeaturemeter.dom.Experiment;
 import javagrinko.sitefeaturemeter.dom.User;
-import javagrinko.sitefeaturemeter.dom.yandex.Attendance;
-import javagrinko.sitefeaturemeter.dom.yandex.AttendanceData;
 import javagrinko.sitefeaturemeter.dom.yandex.OAuthResponse;
+import javagrinko.sitefeaturemeter.services.ExperimentService;
 import javagrinko.sitefeaturemeter.services.UserService;
-import javagrinko.sitefeaturemeter.services.YandexService;
 import javagrinko.sitefeaturemeter.webapp.windows.LoginWindow;
+import javagrinko.sitefeaturemeter.webapp.windows.NewExperimentWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 
-import javax.servlet.http.HttpSession;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @SpringUI
 @Theme("valo")
 @Widgetset("webapp.Widgetset")
 public class MeterUI extends UI {
-
-    @Autowired
-    private HttpSession session;
 
     @Autowired
     private LoginWindow loginWindow;
@@ -44,16 +34,51 @@ public class MeterUI extends UI {
     private UserService userService;
 
     @Autowired
-    private YandexService yandexService;
-    private Chart chart;
+    private ExperimentService experimentService;
+
+    @Autowired
+    private NewExperimentWindow newExperimentWindow;
+
+    private Table experimentsTable;
+    private Button addExperimentButton;
 
     @Override
     protected void init(VaadinRequest request) {
-        VerticalLayout verticalLayout = new VerticalLayout();
-        setContent(verticalLayout);
-        chart = new Chart();
+        VerticalLayout content = new VerticalLayout();
+        setContent(content);
+        content.setMargin(true);
         initLogin();
-        verticalLayout.addComponent(chart);
+        initExperimentersTable();
+        initAddExperimentButton();
+
+        content.addComponent(addExperimentButton);
+        content.addComponent(experimentsTable);
+    }
+
+    private void initAddExperimentButton() {
+        addExperimentButton = new Button("+ Добавить новое нововведение");
+        addExperimentButton.addClickListener(e -> newExperimentWindow.show(this));
+    }
+
+    private void initExperimentersTable() {
+        experimentsTable = new Table("Нововведения");
+        experimentsTable.setSizeFull();
+        experimentsTable.addContainerProperty("Описание", String.class, null);
+        experimentsTable.addContainerProperty("Дата начала", Date.class, null);
+        experimentsTable.addContainerProperty("Осталось дней до завершения", Integer.class, null);
+        experimentsTable.addContainerProperty("Результат", Image.class, null);
+        experimentsTable.setColumnAlignment("Результат", Table.Align.CENTER);
+        List<Experiment> experiments = experimentService.getExperiments();
+        for (int i = 0; i < experiments.size(); i++) {
+            Experiment experiment = experiments.get(i);
+            Image image = new Image();
+            image.setSource(new ThemeResource("images/bad.png"));
+            experimentsTable.addItem(new Object[]{experiment.getDescription(),
+                                                  experiment.getStartDate(),
+                                                  100,
+                                                  image}, i+1);
+        }
+        experimentsTable.setPageLength(experimentsTable.size());
     }
 
     private void initLogin() {
@@ -69,30 +94,11 @@ public class MeterUI extends UI {
                 newUser.setToken(response.getAccessToken());
                 userService.saveUser(newUser);
                 new Notification("Авторизация выполнена",
-                                "Ключ: " + response.getAccessToken() + "\n" +
+                        "Ключ: " + response.getAccessToken() + "\n" +
                                 "Время жизни: " + response.getExpiresInSeconds() + " сек \n" +
                                 "Тип ключа: " + response.getTokenType() +
                                 ((response.getState() == null) ? "" : ("\nСообщение: " + response.getState())),
                         Notification.Type.TRAY_NOTIFICATION).show(getPage());
-                session.setAttribute("token", response.getAccessToken());
-            }
-        } else {
-            session.setAttribute("token", user.getToken());
-            try {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-                List<Attendance> attendances = yandexService.getAttendances(dateFormat.parse("20141210"), dateFormat.parse("20151210"), yandexService.getCounters().getCounters().get(1).getId());
-                DataSeries dataSeries = new DataSeries();
-                for (Attendance attendance : attendances) {
-                    List<AttendanceData> data = attendance.getData();
-                    for (AttendanceData attendanceData : data) {
-                        dataSeries.add(new DataSeriesItem(attendanceData.getDate(), attendanceData.getVisitors()));
-                    }
-                }
-                Configuration configuration = new Configuration();
-                configuration.addSeries(dataSeries);
-                chart.setConfiguration(configuration);
-            } catch (ParseException e) {
-                e.printStackTrace();
             }
         }
     }

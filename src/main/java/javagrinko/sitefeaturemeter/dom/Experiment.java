@@ -14,8 +14,6 @@ public class Experiment {
     @Column
     String description;
 
-    String pathToImage;
-
     @NotNull
     @Column
     Date startDate;
@@ -40,19 +38,19 @@ public class Experiment {
         this.description = description;
     }
 
-    public String getPathToImage() {
-        return pathToImage;
-    }
-
-    public void setPathToImage(String pathToImage) {
-        this.pathToImage = pathToImage;
-    }
-
     public Date getStartDate() {
         return startDate;
     }
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
+    }
+
+    public Long getCounterId() {
+        return counterId;
+    }
+
+    public void setCounterId(Long counterId) {
+        this.counterId = counterId;
     }
 }

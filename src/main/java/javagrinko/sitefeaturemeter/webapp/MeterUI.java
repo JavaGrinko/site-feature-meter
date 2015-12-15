@@ -65,7 +65,7 @@ public class MeterUI extends UI {
         experimentsTable.setSizeFull();
         experimentsTable.addContainerProperty("Описание", String.class, null);
         experimentsTable.addContainerProperty("Дата начала", Date.class, null);
-        experimentsTable.addContainerProperty("Осталось дней до завершения", Integer.class, null);
+        experimentsTable.addContainerProperty("Осталось дней до завершения", ProgressBar.class, null);
         experimentsTable.addContainerProperty("Результат", Image.class, null);
         experimentsTable.setColumnAlignment("Результат", Table.Align.CENTER);
         List<Experiment> experiments = experimentService.getExperiments();
@@ -73,9 +73,11 @@ public class MeterUI extends UI {
             Experiment experiment = experiments.get(i);
             Image image = new Image();
             image.setSource(new ThemeResource("images/bad.png"));
+            ProgressBar progressBar = new ProgressBar(0.5f);
+            progressBar.setSizeFull();
             experimentsTable.addItem(new Object[]{experiment.getDescription(),
                                                   experiment.getStartDate(),
-                                                  100,
+                                                  progressBar,
                                                   image}, i+1);
         }
         experimentsTable.setPageLength(experimentsTable.size());
@@ -94,11 +96,11 @@ public class MeterUI extends UI {
                 newUser.setToken(response.getAccessToken());
                 userService.saveUser(newUser);
                 new Notification("Авторизация выполнена",
-                        "Ключ: " + response.getAccessToken() + "\n" +
+                                "Ключ: " + response.getAccessToken() + "\n" +
                                 "Время жизни: " + response.getExpiresInSeconds() + " сек \n" +
                                 "Тип ключа: " + response.getTokenType() +
                                 ((response.getState() == null) ? "" : ("\nСообщение: " + response.getState())),
-                        Notification.Type.TRAY_NOTIFICATION).show(getPage());
+                                Notification.Type.TRAY_NOTIFICATION).show(getPage());
             }
         }
     }

@@ -1,6 +1,8 @@
 package javagrinko.sitefeaturemeter.webapp.windows;
 
 import com.vaadin.data.util.BeanItemContainer;
+import com.vaadin.server.ClientConnector;
+import com.vaadin.server.Page;
 import com.vaadin.server.UserError;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.*;
@@ -12,12 +14,11 @@ import javagrinko.sitefeaturemeter.services.YandexService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.Iterator;
 
 @Component
 @UIScope
-public class NewExperimentWindow extends Window {
+public class NewExperimentWindow extends Window implements ClientConnector.AttachListener {
 
     public static final String CAPTION = "Добавить нововвдение";
 
@@ -43,9 +44,9 @@ public class NewExperimentWindow extends Window {
         content.setMargin(true);
         content.setSizeFull();
         setContent(content);
+        addAttachListener(this);
     }
 
-    @PostConstruct
     private void setUp(){
         initDescriptionTextField();
         initDateField();
@@ -70,6 +71,11 @@ public class NewExperimentWindow extends Window {
 
                 experimentService.addExperiment(experiment);
                 close();
+                content.removeAllComponents();
+                counterComboBox = null;
+                new Notification("Добавлен новый эксперимент",
+                        "Идет процесс сбора данных...",
+                        Notification.Type.TRAY_NOTIFICATION).show(Page.getCurrent());
             }
         });
     }
@@ -127,5 +133,12 @@ public class NewExperimentWindow extends Window {
             }
         }
         return result;
+    }
+
+    @Override
+    public void attach(AttachEvent event) {
+        if (counterComboBox == null) {
+            setUp();
+        }
     }
 }

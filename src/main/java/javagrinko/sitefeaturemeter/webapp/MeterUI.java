@@ -8,11 +8,13 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import javagrinko.sitefeaturemeter.dom.Experiment;
 import javagrinko.sitefeaturemeter.dom.User;
+import javagrinko.sitefeaturemeter.dom.yandex.Attendance;
 import javagrinko.sitefeaturemeter.dom.yandex.OAuthResponse;
 import javagrinko.sitefeaturemeter.services.ExperimentProcessor;
 import javagrinko.sitefeaturemeter.services.ExperimentService;
 import javagrinko.sitefeaturemeter.services.UserService;
 import javagrinko.sitefeaturemeter.webapp.windows.LoginWindow;
+import javagrinko.sitefeaturemeter.webapp.windows.MeanWindow;
 import javagrinko.sitefeaturemeter.webapp.windows.NewExperimentWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -41,6 +43,9 @@ public class MeterUI extends UI {
     private NewExperimentWindow newExperimentWindow;
 
     @Autowired
+    private MeanWindow meanWindow;
+
+    @Autowired
     private ExperimentProcessor experimentProcessor;
 
     private Table experimentsTable;
@@ -67,6 +72,9 @@ public class MeterUI extends UI {
     private void initExperimentersTable() {
         experimentsTable = new Table("Нововведения");
         experimentsTable.setSizeFull();
+        experimentsTable.setSelectable(true);
+        experimentsTable.setEditable(false);
+        experimentsTable.setImmediate(false);
         experimentsTable.addContainerProperty("Описание", String.class, null);
         experimentsTable.addContainerProperty("Дата начала", Date.class, null);
         experimentsTable.addContainerProperty("Осталось дней до завершения", ProgressBar.class, null);
@@ -85,6 +93,15 @@ public class MeterUI extends UI {
                                                   experiment.getStartDate(),
                                                   progressBar,
                                                   experimentProcessor.isExperimentFinished(experiment) ? badImage : questionImage}, i+1);
+            experimentsTable.addItemClickListener(e -> {
+                if (e.isDoubleClick()){
+                    ((Table) e.getSource()).select(e.getItemId());
+                    Object value1 = experimentsTable.getValue();
+                    Experiment value = experiments.get((Integer)value1-1);
+                    meanWindow.show(this, value);
+                }
+            });
+
         }
         experimentsTable.setPageLength(experimentsTable.size());
     }

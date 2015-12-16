@@ -13,6 +13,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
+apply plugin: 'groovy'
 apply plugin: 'spring-boot'
 apply from: 'http://plugins.jasoft.fi/vaadin.plugin'
 
@@ -42,6 +43,7 @@ dependencies {
     compile('com.vaadin.addon:vaadin-charts:3.0.0-alpha7')
     compile 'com.h2database:h2:1.4.190'
     compile 'joda-time:joda-time:2.9.1'
+    compile 'org.codehaus.groovy:groovy-all:2.4.5'
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 

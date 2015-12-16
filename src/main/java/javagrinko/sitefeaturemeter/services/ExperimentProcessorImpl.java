@@ -2,7 +2,7 @@ package javagrinko.sitefeaturemeter.services;
 
 import javagrinko.sitefeaturemeter.dom.Experiment;
 import javagrinko.sitefeaturemeter.dom.yandex.AttendanceData;
-import javagrinko.sitefeaturemeter.dom.yandex.AttendanceDataMean;
+import javagrinko.sitefeaturemeter.dom.yandex.AttendanceStatistic;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static java.lang.Math.abs;
 
 @Service
 public class ExperimentProcessorImpl implements ExperimentProcessor {
@@ -51,10 +53,10 @@ public class ExperimentProcessorImpl implements ExperimentProcessor {
     }
 
     @Override
-    public List<AttendanceDataMean> getAttendanceDataMeanList(List<AttendanceData> attendances) {
+    public List<AttendanceStatistic> getAttendanceStatisticEvolutionList(List<AttendanceData> attendances) {
         AttendanceData sumAttendance = new AttendanceData();
         initSumAttendance(sumAttendance);
-        List<AttendanceDataMean> attendanceDataMeans = new ArrayList<>();
+        List<AttendanceStatistic> attendanceStatistics = new ArrayList<>();
         for (int i = 0; i < attendances.size(); i++) {
             AttendanceData attendance = attendances.get(i);
             Double denial = attendance.getDenial();
@@ -80,18 +82,28 @@ public class ExperimentProcessorImpl implements ExperimentProcessor {
             Long sumVisitTime = sumAttendance.getVisitTime() + visitTime;
             sumAttendance.setVisitTime(sumVisitTime);
 
-            AttendanceDataMean mean = new AttendanceDataMean();
-            mean.setDate(attendance.getDate());
-            mean.setDenial(sumDenial / (i + 1));
-            mean.setDepth(sumDepth / (i + 1));
-            mean.setNewVisitors((sumNewVisitors / (i + 1.)));
-            mean.setPageViews(((sumPageViews / (i + 1.))));
-            mean.setVisits((sumVisits / (i + 1.)));
-            mean.setVisitors((sumVisitors / (i + 1.)));
-            mean.setVisitTime((sumVisitTime / (i + 1.)));
-            attendanceDataMeans.add(mean);
+            AttendanceStatistic statistic = new AttendanceStatistic();
+
+            statistic.setDate(attendance.getDate());
+            statistic.setMeanDenial(sumDenial / (i + 1));
+            statistic.setMeanDepth(sumDepth / (i + 1));
+            statistic.setMeanNewVisitors((sumNewVisitors / (i + 1.)));
+            statistic.setMeanPageViews(((sumPageViews / (i + 1.))));
+            statistic.setMeanVisits((sumVisits / (i + 1.)));
+            statistic.setMeanVisitors((sumVisitors / (i + 1.)));
+            statistic.setMeanVisitTime((sumVisitTime / (i + 1.)));
+
+            statistic.setSigmaDenial(abs(denial - (sumDenial / (i + 1))));
+            statistic.setSigmaDepth(abs(depth - (sumDepth / (i + 1))));
+            statistic.setSigmaNewVisitors(abs(newVisitors - (sumNewVisitors / (i + 1.))));
+            statistic.setSigmaPageViews(abs(pageViews - ((sumPageViews / (i + 1.)))));
+            statistic.setSigmaVisits(abs(visits - (sumVisits / (i + 1.))));
+            statistic.setSigmaVisitors(abs(visitors - (sumVisitors / (i + 1.))));
+            statistic.setSigmaVisitTime(abs(visitTime - (sumVisitTime / (i + 1.))));
+
+            attendanceStatistics.add(statistic);
         }
-        return attendanceDataMeans;
+        return attendanceStatistics;
     }
 
     private void initSumAttendance(AttendanceData sumAttendance) {

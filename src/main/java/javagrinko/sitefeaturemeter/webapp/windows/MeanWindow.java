@@ -10,7 +10,7 @@ import com.vaadin.ui.Window;
 import javagrinko.sitefeaturemeter.dom.Experiment;
 import javagrinko.sitefeaturemeter.dom.yandex.Attendance;
 import javagrinko.sitefeaturemeter.dom.yandex.AttendanceData;
-import javagrinko.sitefeaturemeter.dom.yandex.AttendanceDataMean;
+import javagrinko.sitefeaturemeter.dom.yandex.AttendanceStatistic;
 import javagrinko.sitefeaturemeter.services.ExperimentProcessor;
 import javagrinko.sitefeaturemeter.services.YandexService;
 import org.joda.time.DateTime;
@@ -58,7 +58,9 @@ public class MeanWindow extends Window{
             close();
         }
         ui.addWindow(this);
-        DataSeries dataSeries = new DataSeries("Математическое ожидание");
+        DataSeries meanSeries = new DataSeries("Математическое ожидание");
+        DataSeries plusSigmaSeries = new DataSeries("+3sigma");
+        DataSeries minusSigmaSeries = new DataSeries("-3sigma");
         Date experimentStartDate = experiment.getStartDate();
         Date startDate = new DateTime(experimentStartDate).minusDays(90).toDate();
         Date endDate = new DateTime(experimentStartDate).plusDays(90).toDate();
@@ -67,13 +69,15 @@ public class MeanWindow extends Window{
         for (Attendance attendance : attendances) {
             data.addAll(attendance.getData());
         }
-        List<AttendanceDataMean> attendanceDataMeanList = experimentProcessor.getAttendanceDataMeanList(data);
-        for (AttendanceDataMean mean : attendanceDataMeanList) {
-            dataSeries.add(new DataSeriesItem(mean.getDate(), mean.getVisitors()));
+        List<AttendanceStatistic> attendanceStatisticList = experimentProcessor.getAttendanceStatisticEvolutionList(data);
+        for (AttendanceStatistic statistic : attendanceStatisticList) {
+            meanSeries.add(new DataSeriesItem(statistic.getDate(), statistic.getMeanVisitors()));
+            plusSigmaSeries.add(new DataSeriesItem(statistic.getDate(), statistic.getSigmaVisitors() * 3));
+            minusSigmaSeries.add(new DataSeriesItem(statistic.getDate(), - statistic.getSigmaVisitors() * 3));
         }
         Configuration configuration = new Configuration();
         configuration.setTitle("Математическое ожидание");
-        configuration.setSeries(dataSeries);
+        configuration.setSeries(meanSeries, plusSigmaSeries, minusSigmaSeries);
         meanChart.setConfiguration(configuration);
     }
 }

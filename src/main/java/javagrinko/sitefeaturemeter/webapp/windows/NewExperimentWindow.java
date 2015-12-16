@@ -63,9 +63,9 @@ public class NewExperimentWindow extends Window implements ClientConnector.Attac
         submitButton.setWidth("100%");
         submitButton.setSizeFull();
         submitButton.addClickListener(e -> {
-            if (validate(content)){
+            if (validate(content)) {
                 Experiment experiment = new Experiment();
-                experiment.setCounterId(((Counter)counterComboBox.getValue()).getId());
+                experiment.setCounterId(((Counter) counterComboBox.getValue()).getId());
                 experiment.setStartDate(dateField.getValue());
                 experiment.setDescription(descriptionTextField.getValue());
 
@@ -88,10 +88,12 @@ public class NewExperimentWindow extends Window implements ClientConnector.Attac
         counterComboBox.setNullSelectionAllowed(false);
         BeanItemContainer<Counter> container = new BeanItemContainer<>(Counter.class);
         Counters counters = yandexService.getCounters();
-        container.addAll(counters.getCounters());
-        counterComboBox.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
-        counterComboBox.setItemCaptionPropertyId("siteName");
-        counterComboBox.setContainerDataSource(container);
+        if (counters != null) {
+            container.addAll(counters.getCounters());
+            counterComboBox.setItemCaptionMode(AbstractSelect.ItemCaptionMode.PROPERTY);
+            counterComboBox.setItemCaptionPropertyId("siteName");
+            counterComboBox.setContainerDataSource(container);
+        }
     }
 
     private void initDateField() {

@@ -9,6 +9,7 @@ import com.vaadin.ui.*;
 import javagrinko.sitefeaturemeter.dom.Experiment;
 import javagrinko.sitefeaturemeter.dom.User;
 import javagrinko.sitefeaturemeter.dom.yandex.OAuthResponse;
+import javagrinko.sitefeaturemeter.services.ExperimentProcessor;
 import javagrinko.sitefeaturemeter.services.ExperimentService;
 import javagrinko.sitefeaturemeter.services.UserService;
 import javagrinko.sitefeaturemeter.webapp.windows.LoginWindow;
@@ -38,6 +39,9 @@ public class MeterUI extends UI {
 
     @Autowired
     private NewExperimentWindow newExperimentWindow;
+
+    @Autowired
+    private ExperimentProcessor experimentProcessor;
 
     private Table experimentsTable;
     private Button addExperimentButton;
@@ -71,14 +75,16 @@ public class MeterUI extends UI {
         List<Experiment> experiments = experimentService.getExperiments();
         for (int i = 0; i < experiments.size(); i++) {
             Experiment experiment = experiments.get(i);
-            Image image = new Image();
-            image.setSource(new ThemeResource("images/bad.png"));
-            ProgressBar progressBar = new ProgressBar(0.5f);
+            Image badImage = new Image();
+            badImage.setSource(new ThemeResource("images/bad.png"));
+            Image questionImage = new Image();
+            questionImage.setSource(new ThemeResource("images/question.png"));
+            ProgressBar progressBar = new ProgressBar(experimentProcessor.getProgressValue(experiment));
             progressBar.setSizeFull();
             experimentsTable.addItem(new Object[]{experiment.getDescription(),
                                                   experiment.getStartDate(),
                                                   progressBar,
-                                                  image}, i+1);
+                                                  experimentProcessor.isExperimentFinished(experiment) ? badImage : questionImage}, i+1);
         }
         experimentsTable.setPageLength(experimentsTable.size());
     }

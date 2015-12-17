@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.List;
 
 import static java.lang.Math.abs;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
 
 @Service
 public class ExperimentProcessorImpl implements ExperimentProcessor {
@@ -85,21 +87,31 @@ public class ExperimentProcessorImpl implements ExperimentProcessor {
             AttendanceStatistic statistic = new AttendanceStatistic();
 
             statistic.setDate(attendance.getDate());
-            statistic.setMeanDenial(sumDenial / (i + 1));
-            statistic.setMeanDepth(sumDepth / (i + 1));
-            statistic.setMeanNewVisitors((sumNewVisitors / (i + 1.)));
-            statistic.setMeanPageViews(((sumPageViews / (i + 1.))));
-            statistic.setMeanVisits((sumVisits / (i + 1.)));
-            statistic.setMeanVisitors((sumVisitors / (i + 1.)));
-            statistic.setMeanVisitTime((sumVisitTime / (i + 1.)));
 
-            statistic.setSigmaDenial(abs(denial - (sumDenial / (i + 1))));
-            statistic.setSigmaDepth(abs(depth - (sumDepth / (i + 1))));
-            statistic.setSigmaNewVisitors(abs(newVisitors - (sumNewVisitors / (i + 1.))));
-            statistic.setSigmaPageViews(abs(pageViews - ((sumPageViews / (i + 1.)))));
-            statistic.setSigmaVisits(abs(visits - (sumVisits / (i + 1.))));
-            statistic.setSigmaVisitors(abs(visitors - (sumVisitors / (i + 1.))));
-            statistic.setSigmaVisitTime(abs(visitTime - (sumVisitTime / (i + 1.))));
+            double n = i + 1.;
+
+            double meanDenial = sumDenial / n;
+            statistic.setMeanDenial(meanDenial);
+            double meanDepth = sumDepth / n;
+            statistic.setMeanDepth(meanDepth);
+            double meanNewVisitors = sumNewVisitors / n;
+            statistic.setMeanNewVisitors(meanNewVisitors);
+            double meanPageViews = sumPageViews / n;
+            statistic.setMeanPageViews(meanPageViews);
+            double meanVisits = sumVisits / n;
+            statistic.setMeanVisits(meanVisits);
+            double meanVisitors = sumVisitors / n;
+            statistic.setMeanVisitors(meanVisitors);
+            double meanVisitTime = sumVisitTime / n;
+            statistic.setMeanVisitTime(meanVisitTime);
+
+            statistic.setSigmaDenial(sqrt(pow(denial - meanDenial, 2) / n));
+            statistic.setSigmaDepth(sqrt(pow(depth - meanDepth, 2) / n));
+            statistic.setSigmaNewVisitors(sqrt(pow(newVisitors - meanNewVisitors, 2) / n));
+            statistic.setSigmaPageViews(sqrt(pow(pageViews - meanPageViews, 2) / n));
+            statistic.setSigmaVisits(sqrt(pow(visits - meanVisits, 2) / n));
+            statistic.setSigmaVisitors(sqrt(pow(visitors - meanVisitors, 2) / n));
+            statistic.setSigmaVisitTime(sqrt(pow(visitTime - meanVisitTime, 2) / n));
 
             attendanceStatistics.add(statistic);
         }

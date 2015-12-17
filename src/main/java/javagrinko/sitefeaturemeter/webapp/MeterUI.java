@@ -8,13 +8,12 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import javagrinko.sitefeaturemeter.dom.Experiment;
 import javagrinko.sitefeaturemeter.dom.User;
-import javagrinko.sitefeaturemeter.dom.yandex.Attendance;
 import javagrinko.sitefeaturemeter.dom.yandex.OAuthResponse;
 import javagrinko.sitefeaturemeter.services.ExperimentProcessor;
 import javagrinko.sitefeaturemeter.services.ExperimentService;
 import javagrinko.sitefeaturemeter.services.UserService;
 import javagrinko.sitefeaturemeter.webapp.windows.LoginWindow;
-import javagrinko.sitefeaturemeter.webapp.windows.MeanWindow;
+import javagrinko.sitefeaturemeter.webapp.windows.StatisticWindow;
 import javagrinko.sitefeaturemeter.webapp.windows.NewExperimentWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
@@ -43,7 +42,7 @@ public class MeterUI extends UI {
     private NewExperimentWindow newExperimentWindow;
 
     @Autowired
-    private MeanWindow meanWindow;
+    private StatisticWindow statisticWindow;
 
     @Autowired
     private ExperimentProcessor experimentProcessor;
@@ -98,7 +97,7 @@ public class MeterUI extends UI {
                     ((Table) e.getSource()).select(e.getItemId());
                     Object value1 = experimentsTable.getValue();
                     Experiment value = experiments.get((Integer)value1-1);
-                    meanWindow.show(this, value);
+                    statisticWindow.show(this, value);
                 }
             });
 

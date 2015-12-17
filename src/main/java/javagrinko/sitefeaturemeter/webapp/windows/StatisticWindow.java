@@ -4,6 +4,7 @@ import com.vaadin.addon.charts.Chart;
 import com.vaadin.addon.charts.model.Configuration;
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
+import com.vaadin.addon.charts.model.PlotOptionsScatter;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -22,7 +23,7 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-public class MeanWindow extends Window{
+public class StatisticWindow extends Window {
 
     Chart meanChart;
 
@@ -33,7 +34,7 @@ public class MeanWindow extends Window{
     private YandexService yandexService;
     private Experiment experiment;
 
-    public MeanWindow() {
+    public StatisticWindow() {
         super("Анализ статистики");
         setHeight("600px");
         setWidth("900px");
@@ -52,32 +53,37 @@ public class MeanWindow extends Window{
         meanChart.setSizeFull();
     }
 
-    public void show(UI ui, Experiment experiment){
+    public void show(UI ui, Experiment experiment) {
         this.experiment = experiment;
-        if (getParent() != null){
+        if (getParent() != null) {
             close();
         }
         ui.addWindow(this);
         DataSeries meanSeries = new DataSeries("Математическое ожидание");
         DataSeries plusSigmaSeries = new DataSeries("+3sigma");
         DataSeries minusSigmaSeries = new DataSeries("-3sigma");
+        DataSeries absoluteSigmaSeries = new DataSeries("Абсолютные");
+        absoluteSigmaSeries.setPlotOptions(new PlotOptionsScatter());
         Date experimentStartDate = experiment.getStartDate();
-        Date startDate = new DateTime(experimentStartDate).minusDays(90).toDate();
-        Date endDate = new DateTime(experimentStartDate).plusDays(90).toDate();
+        Date startDate = new DateTime(experimentStartDate).minusDays(190).toDate();
+        Date endDate = new DateTime(experimentStartDate).plusDays(190).toDate();
         List<Attendance> attendances = yandexService.getAttendances(startDate, endDate, experiment.getCounterId());
         List<AttendanceData> data = new ArrayList<>();
         for (Attendance attendance : attendances) {
             data.addAll(attendance.getData());
         }
         List<AttendanceStatistic> attendanceStatisticList = experimentProcessor.getAttendanceStatisticEvolutionList(data);
-        for (AttendanceStatistic statistic : attendanceStatisticList) {
-            meanSeries.add(new DataSeriesItem(statistic.getDate(), statistic.getMeanVisitors()));
-            plusSigmaSeries.add(new DataSeriesItem(statistic.getDate(), statistic.getSigmaVisitors() * 3));
-            minusSigmaSeries.add(new DataSeriesItem(statistic.getDate(), - statistic.getSigmaVisitors() * 3));
+        for (int i = 0; i < attendanceStatisticList.size(); i++) {
+            AttendanceStatistic statistic = attendanceStatisticList.get(i);
+            AttendanceStatistic last = attendanceStatisticList.get(attendanceStatisticList.size() - 1);
+            meanSeries.add(new DataSeriesItem(statistic.getDate(), last.getMeanVisits()));
+            plusSigmaSeries.add(new DataSeriesItem(statistic.getDate(), last.getMeanVisits() + last.getSigmaVisits() * 3));
+            minusSigmaSeries.add(new DataSeriesItem(statistic.getDate(), last.getMeanVisits() - last.getSigmaVisits() * 3));
+            absoluteSigmaSeries.add(new DataSeriesItem(data.get(i).getDate(), data.get(i).getVisits()));
         }
         Configuration configuration = new Configuration();
         configuration.setTitle("Математическое ожидание");
-        configuration.setSeries(meanSeries, plusSigmaSeries, minusSigmaSeries);
+        configuration.setSeries(meanSeries, plusSigmaSeries, minusSigmaSeries, absoluteSigmaSeries);
         meanChart.setConfiguration(configuration);
     }
 }

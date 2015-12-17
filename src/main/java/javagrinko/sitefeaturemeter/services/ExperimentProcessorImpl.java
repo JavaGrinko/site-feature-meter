@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static java.lang.Math.abs;
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
 
@@ -105,18 +104,22 @@ public class ExperimentProcessorImpl implements ExperimentProcessor {
             double meanVisitTime = sumVisitTime / n;
             statistic.setMeanVisitTime(meanVisitTime);
 
-            statistic.setSigmaDenial(sqrt(pow(denial - meanDenial, 2) / n));
-            statistic.setSigmaDepth(sqrt(pow(depth - meanDepth, 2) / n));
-            statistic.setSigmaNewVisitors(sqrt(pow(newVisitors - meanNewVisitors, 2) / n));
-            statistic.setSigmaPageViews(sqrt(pow(pageViews - meanPageViews, 2) / n));
-            statistic.setSigmaVisits(sqrt(pow(visits - meanVisits, 2) / n));
-            statistic.setSigmaVisitors(sqrt(pow(visitors - meanVisitors, 2) / n));
-            statistic.setSigmaVisitTime(sqrt(pow(visitTime - meanVisitTime, 2) / n));
+            AttendanceData sigmaSumAttendance = new AttendanceData();
+            initSumAttendance(sigmaSumAttendance);
+            for (int j = 0; j < n; j++) {
+                AttendanceData attendanceData = attendances.get(i);
+                Long visits1 = attendanceData.getVisits();
+
+                sigmaSumAttendance.setVisits((long) pow(visits1 - meanVisits, 2));
+            }
+
+            statistic.setSigmaVisits(sqrt(sigmaSumAttendance.getVisits() / n));
 
             attendanceStatistics.add(statistic);
         }
         return attendanceStatistics;
     }
+
 
     private void initSumAttendance(AttendanceData sumAttendance) {
         sumAttendance.setDenial(0D);

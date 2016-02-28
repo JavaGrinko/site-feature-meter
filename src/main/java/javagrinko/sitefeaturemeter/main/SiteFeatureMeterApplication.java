@@ -3,10 +3,10 @@ package javagrinko.sitefeaturemeter.main;
 import javagrinko.sitefeaturemeter.converters.YandexOAuthResponseConverter;
 import org.h2.server.web.WebServlet;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ConversionServiceFactoryBean;
@@ -23,7 +23,13 @@ import java.util.HashSet;
 @SpringBootApplication
 @EnableJpaRepositories(basePackages = "javagrinko.sitefeaturemeter")
 @ComponentScan("javagrinko.sitefeaturemeter")
-public class SiteFeatureMeterApplication {
+public class SiteFeatureMeterApplication extends SpringBootServletInitializer {
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(SiteFeatureMeterApplication.class);
+    }
+
 
     public static void main(String[] args) {
         new SpringApplicationBuilder(SiteFeatureMeterApplication.class).banner((environment, sourceClass, out) -> out.print(

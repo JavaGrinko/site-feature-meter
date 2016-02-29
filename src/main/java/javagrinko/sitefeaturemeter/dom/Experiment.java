@@ -1,32 +1,25 @@
 package javagrinko.sitefeaturemeter.dom;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 
-@Entity(name = "experiments")
+@Document(collection = "experiments")
 public class Experiment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer id;
+    String id;
 
-    @NotNull
-    @Column
     String description;
 
-    @NotNull
-    @Column
     Date startDate;
 
-    @NotNull
-    @Column
     Long counterId;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

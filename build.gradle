@@ -21,7 +21,8 @@ apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'spring-boot'
-apply from: 'http://plugins.jasoft.fi/vaadin.plugin'
+//apply from: 'http://plugins.jasoft.fi/vaadin.plugin'
+apply from: 'src/main/resources/vaadin.plugin'
 
 jar {
     baseName = 'site-feature-meter'
@@ -42,13 +43,12 @@ repositories {
 
 dependencies {
     providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
     compile 'org.springframework:spring-aspects:4.2.3.RELEASE'
     compile('org.springframework.boot:spring-boot-starter-web')
     compile("com.vaadin:vaadin-client-compiled:7.5.5")
     compile('com.vaadin:vaadin-spring-boot-starter:1.0.0')
     compile('com.vaadin.addon:vaadin-charts:3.0.0-alpha7')
-    compile 'com.h2database:h2:1.4.190'
     compile 'joda-time:joda-time:2.9.1'
     compile 'org.codehaus.groovy:groovy-all:2.4.5'
     testCompile('org.springframework.boot:spring-boot-starter-test')
@@ -86,7 +86,9 @@ remotes {
 task deploy << {
     ssh.run {
         session(remotes.webServer) {
-            put 'C:\\Workspace\\site-feature-meter\\build\\libs\\site-feature-meter.war', '/var/lib/tomcat7/webapps/'
+            put 'C:\\Workspace\\site-feature-meter\\build\\libs\\site-feature-meter.war', '/opt/apache-tomcat-8.0.32/webapps/'
+            execute './opt/apache-tomcat-8.0.32/bin/shutdown.sh'
+            execute './opt/apache-tomcat-8.0.32/bin/startup.sh'
         }
     }
 }

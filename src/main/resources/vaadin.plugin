@@ -1,0 +1,35 @@
+buildscript { 
+	project.ext {
+		pluginVersion = '+' 
+		repositoryName = 'Bintray Plugin Repository' 
+		repositoryUrl = 'http://dl.bintray.com/johndevs/maven' 
+		snapshotRepositoryName = 'Jasoft.fi Plugin Snapshot Repository' 
+		snapshotRepositoryUrl = 'http://mvn.jasoft.fi/maven2-snapshots' 
+} 
+
+repositories { 
+	mavenCentral()
+	def version = VersionNumber.parse(project.gradle.gradleVersion)
+	if(version.minor < 9 && version.major == 1){
+		mavenRepo( name: project.ext.repositoryName, url: project.ext.repositoryUrl )
+	} else {
+		maven({
+			//name = project.ext.repositoryName
+			url = project.ext.repositoryUrl
+		})
+	}
+} 
+
+dependencies { 
+	classpath group: 'fi.jasoft.plugin', name: 'gradle-vaadin-plugin', version: project.ext.pluginVersion 
+} 
+} 
+repositories { 
+	maven({ 
+		//name = project.ext.repositoryName
+		url = project.ext.repositoryUrl
+	}) 
+} 
+if (!project.plugins.findPlugin(fi.jasoft.plugin.GradleVaadinPlugin)) { 
+	project.apply(plugin: fi.jasoft.plugin.GradleVaadinPlugin) 
+} 

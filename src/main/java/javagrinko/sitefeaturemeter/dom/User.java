@@ -1,24 +1,20 @@
 package javagrinko.sitefeaturemeter.dom;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity(name = "users")
+@Document(collection = "users")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer id;
+    String id;
 
-    @Column
-    @NotNull
     String token;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

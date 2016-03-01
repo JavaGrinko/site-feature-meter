@@ -23,7 +23,6 @@ public class SiteFeatureMeterApplication extends SpringBootServletInitializer {
         return application.sources(SiteFeatureMeterApplication.class);
     }
 
-
     public static void main(String[] args) {
         new SpringApplicationBuilder(SiteFeatureMeterApplication.class).run(args);
     }

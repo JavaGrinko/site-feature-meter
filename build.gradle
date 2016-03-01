@@ -75,11 +75,11 @@ task wrapper(type: Wrapper) {
 
 remotes {
     webServer {
-        host = "$vnsHost"
+        host = "$vpsHost"
         user = 'root'
         //identity = file('C:/Users/Grinch/.ssh/id_rsa')
         knownHosts = allowAnyHosts
-        password = "$vnsPassword"
+        password = "$vpsPassword"
     }
 }
 
@@ -87,8 +87,8 @@ task deploy << {
     ssh.run {
         session(remotes.webServer) {
             //put 'C:\\Workspace\\site-feature-meter\\build\\libs\\site-feature-meter.war', '/opt/apache-tomcat-8.0.32/webapps/'
-            //execute './opt/apache-tomcat-8.0.32/bin/shutdown.sh'
-            //execute './opt/apache-tomcat-8.0.32/bin/startup.sh'
+            execute '/opt/apache-tomcat-8.0.32/bin/shutdown.sh'
+            execute '/opt/apache-tomcat-8.0.32/bin/startup.sh'
         }
     }
 }

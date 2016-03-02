@@ -21,8 +21,7 @@ apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'groovy'
 apply plugin: 'spring-boot'
-//apply from: 'http://plugins.jasoft.fi/vaadin.plugin'
-apply from: 'src/main/resources/vaadin.plugin'
+apply from: 'http://plugins.jasoft.fi/vaadin.plugin'
 
 jar {
     baseName = 'site-feature-meter'
@@ -42,16 +41,16 @@ repositories {
 
 
 dependencies {
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-    compile('org.springframework.boot:spring-boot-starter-data-mongodb')
+    //providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile 'org.springframework.boot:spring-boot-starter-data-mongodb'
     compile 'org.springframework:spring-aspects:4.2.3.RELEASE'
-    compile('org.springframework.boot:spring-boot-starter-web')
-    compile("com.vaadin:vaadin-client-compiled:7.5.5")
-    compile('com.vaadin:vaadin-spring-boot-starter:1.0.0')
-    compile('com.vaadin.addon:vaadin-charts:3.0.0-alpha7')
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile "com.vaadin:vaadin-client-compiled:7.5.5"
+    compile 'com.vaadin:vaadin-spring-boot-starter:1.0.0'
+    compile 'com.vaadin.addon:vaadin-charts:3.0.0-alpha7'
     compile 'joda-time:joda-time:2.9.1'
     compile 'org.codehaus.groovy:groovy-all:2.4.5'
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
 
 

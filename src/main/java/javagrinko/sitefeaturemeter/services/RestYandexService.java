@@ -25,8 +25,8 @@ public class RestYandexService implements YandexService {
 
     public static final String HOST_URL = "https://api-metrika.yandex.ru/";
 
-    public static final String COUNTERS = "counters";
-    public static final String ATTENDANCE = "stat/traffic/summary";
+    public static final String COUNTERS = "counters.json";
+    public static final String ATTENDANCE = "stat/traffic/summary.json";
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -39,7 +39,6 @@ public class RestYandexService implements YandexService {
     public Counters getCounters() {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "OAuth " + userService.getUser().getToken());
-        httpHeaders.add("Accept", "application/x-yametrika+json");
         HttpEntity<Object> entity = new HttpEntity<>(httpHeaders);
         ResponseEntity<Counters> exchange = restTemplate.exchange(HOST_URL + COUNTERS, HttpMethod.GET, entity, Counters.class);
         return exchange.getBody();
@@ -50,7 +49,6 @@ public class RestYandexService implements YandexService {
         List<Attendance> attendances = new ArrayList<>();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Authorization", "OAuth " + userService.getUser().getToken());
-        httpHeaders.add("Accept", "application/x-yametrika+json");
         UriComponentsBuilder uri = UriComponentsBuilder.fromUriString(HOST_URL)
                 .path(ATTENDANCE)
                 .queryParam("id", counterID);

@@ -26,6 +26,7 @@ public class YandexServiceThrowableHandlerAspect {
                     throwable.getMessage(),
                     Notification.Type.TRAY_NOTIFICATION)
                     .show(Page.getCurrent());
+            throwable.printStackTrace();
         }
         return o;
     }

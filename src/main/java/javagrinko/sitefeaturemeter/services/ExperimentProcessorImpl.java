@@ -120,6 +120,34 @@ public class ExperimentProcessorImpl implements ExperimentProcessor {
         return attendanceStatistics;
     }
 
+    @Override
+    public AttendanceData getAttendanceIntegral(List<AttendanceData> attendances) {
+        AttendanceData integralData = new AttendanceData();
+        initIntegralData(integralData);
+        attendances.forEach(it -> {
+            integralData.setVisits(integralData.getVisits() + it.getVisits());
+            integralData.setPageViews(integralData.getPageViews() + it.getPageViews());
+            integralData.setVisitTime(integralData.getVisitTime() + it.getVisitTime());
+            integralData.setVisitors(integralData.getVisitors() + it.getVisitors());
+            integralData.setNewVisitors(integralData.getNewVisitors() + it.getNewVisitors());
+            integralData.setDenial(integralData.getDenial() + it.getDenial());
+            integralData.setDepth(integralData.getDepth() + it.getDepth());
+        });
+        return integralData;
+    }
+
+    private void initIntegralData(AttendanceData integralData) {
+        integralData.setDate(new Date());
+        integralData.setDenial(0D);
+        integralData.setDepth(0D);
+        integralData.setId(0L);
+        integralData.setNewVisitors(0L);
+        integralData.setPageViews(0L);
+        integralData.setVisitors(0L);
+        integralData.setVisits(0L);
+        integralData.setVisitTime(0L);
+    }
+
 
     private void initSumAttendance(AttendanceData sumAttendance) {
         sumAttendance.setDenial(0D);

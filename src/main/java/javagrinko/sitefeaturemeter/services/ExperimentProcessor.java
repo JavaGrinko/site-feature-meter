@@ -15,4 +15,7 @@ public interface ExperimentProcessor {
     Date getExperimentFinishDate(Experiment experiment);
 
     List<AttendanceStatistic> getAttendanceStatisticEvolutionList(List<AttendanceData> attendances);
+
+    AttendanceData getAttendanceIntegral(List<AttendanceData> attendances);
+
 }

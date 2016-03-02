@@ -32,6 +32,7 @@ public class StatisticWindow extends Window {
 
     @Autowired
     private YandexService yandexService;
+
     private Experiment experiment;
 
     public StatisticWindow() {

@@ -1,37 +1,36 @@
 package javagrinko.sitefeaturemeter.webapp.windows;
 
-import com.vaadin.addon.charts.Chart;
-import com.vaadin.addon.charts.model.Configuration;
-import com.vaadin.addon.charts.model.DataSeries;
-import com.vaadin.addon.charts.model.DataSeriesItem;
-import com.vaadin.addon.charts.model.PlotOptionsScatter;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import javagrinko.sitefeaturemeter.dom.Experiment;
+import javagrinko.sitefeaturemeter.dom.yandex.Accounts;
 import javagrinko.sitefeaturemeter.dom.yandex.Attendance;
-import javagrinko.sitefeaturemeter.dom.yandex.AttendanceData;
-import javagrinko.sitefeaturemeter.dom.yandex.AttendanceStatistic;
+import javagrinko.sitefeaturemeter.dom.yandex.AttendanceTotals;
 import javagrinko.sitefeaturemeter.services.ExperimentProcessor;
 import javagrinko.sitefeaturemeter.services.YandexService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Component
 public class StatisticWindow extends Window {
 
-    Chart meanChart;
-
     @Autowired
     private ExperimentProcessor experimentProcessor;
 
     @Autowired
     private YandexService yandexService;
+
+    @Value("${algorithm.experiment.days}")
+    private int experimentDaysCount;
+
+    private Table statisticTable;
 
     private Experiment experiment;
 
@@ -43,48 +42,52 @@ public class StatisticWindow extends Window {
         VerticalLayout content = new VerticalLayout();
         content.setSizeFull();
 
-        initMeanChart();
+        initTable();
 
-        content.addComponent(meanChart);
+        content.addComponent(statisticTable);
         setContent(content);
     }
 
-    private void initMeanChart() {
-        meanChart = new Chart();
-        meanChart.setSizeFull();
+    private void initTable() {
+        statisticTable = new Table();
+        statisticTable.addContainerProperty("Parameter", String.class, null);
+        statisticTable.addContainerProperty("Before", Number.class, null);
+        statisticTable.addContainerProperty("After", Number.class, null);
+        statisticTable.addContainerProperty("Result", Number.class, null);
+        statisticTable.setSizeFull();
+        statisticTable.setSelectable(true);
+        statisticTable.setEditable(false);
+        statisticTable.setNullSelectionAllowed(false);
+        statisticTable.setMultiSelect(false);
+        statisticTable.setImmediate(true);
     }
+
 
     public void show(UI ui, Experiment experiment) {
         this.experiment = experiment;
         if (getParent() != null) {
             close();
         }
+        Accounts accounts = yandexService.getAccounts();
         ui.addWindow(this);
-        DataSeries meanSeries = new DataSeries("Математическое ожидание");
-        DataSeries plusSigmaSeries = new DataSeries("+3sigma");
-        DataSeries minusSigmaSeries = new DataSeries("-3sigma");
-        DataSeries absoluteSigmaSeries = new DataSeries("Абсолютные");
-        absoluteSigmaSeries.setPlotOptions(new PlotOptionsScatter());
-        Date experimentStartDate = experiment.getStartDate();
-        Date startDate = new DateTime(experimentStartDate).minusDays(190).toDate();
-        Date endDate = new DateTime(experimentStartDate).plusDays(190).toDate();
-        List<Attendance> attendances = yandexService.getAttendances(startDate, endDate, experiment.getCounterId());
-        List<AttendanceData> data = new ArrayList<>();
-        for (Attendance attendance : attendances) {
-            data.addAll(attendance.getData());
-        }
-        List<AttendanceStatistic> attendanceStatisticList = experimentProcessor.getAttendanceStatisticEvolutionList(data);
-        for (int i = 0; i < attendanceStatisticList.size(); i++) {
-            AttendanceStatistic statistic = attendanceStatisticList.get(i);
-            AttendanceStatistic last = attendanceStatisticList.get(attendanceStatisticList.size() - 1);
-            meanSeries.add(new DataSeriesItem(statistic.getDate(), last.getMeanVisits()));
-            plusSigmaSeries.add(new DataSeriesItem(statistic.getDate(), last.getMeanVisits() + last.getSigmaVisits() * 3));
-            minusSigmaSeries.add(new DataSeriesItem(statistic.getDate(), last.getMeanVisits() - last.getSigmaVisits() * 3));
-            absoluteSigmaSeries.add(new DataSeriesItem(data.get(i).getDate(), data.get(i).getVisits()));
-        }
-        Configuration configuration = new Configuration();
-        configuration.setTitle("Математическое ожидание");
-        configuration.setSeries(meanSeries, plusSigmaSeries, minusSigmaSeries, absoluteSigmaSeries);
-        meanChart.setConfiguration(configuration);
+        Long counterId = experiment.getCounterId();
+        Date startDate = experiment.getStartDate();
+
+        List<Attendance> attendancesBefore = yandexService.getAttendances(new DateTime(startDate).minusDays(experimentDaysCount).toDate(), startDate, counterId);
+        List<Attendance> attendancesAfter = yandexService.getAttendances(startDate, new DateTime(startDate).plusDays(experimentDaysCount).toDate(), counterId);
+
+        AttendanceTotals totalsBefore = attendancesBefore.get(0).getTotals();
+        AttendanceTotals totalsAfter = attendancesAfter.get(0).getTotals();
+
+        AttendanceTotals deltaTotals = totalsAfter.minus(totalsBefore);
+
+        statisticTable.addItem(new Object[]{"Visitors", totalsBefore.getVisitors(), totalsAfter.getVisitors(), deltaTotals.getVisitors()}, 0);
+        statisticTable.addItem(new Object[]{"Denial", totalsBefore.getDenial(), totalsAfter.getDenial(), deltaTotals.getDenial()}, 1);
+        statisticTable.addItem(new Object[]{"Visits", totalsBefore.getVisits(), totalsAfter.getVisits(), deltaTotals.getVisits()}, 2);
+        statisticTable.addItem(new Object[]{"Depth", totalsBefore.getDepth(), totalsAfter.getDepth(), deltaTotals.getDepth()}, 3);
+        statisticTable.addItem(new Object[]{"Page views", totalsBefore.getPageViews(), totalsAfter.getPageViews(), deltaTotals.getPageViews()}, 4);
+        statisticTable.addItem(new Object[]{"Visit time", totalsBefore.getVisitTime(), totalsAfter.getVisitTime(), deltaTotals.getVisitTime()}, 5);
+        statisticTable.addItem(new Object[]{"New visitors", totalsBefore.getNewVisitors(), totalsAfter.getNewVisitors(), deltaTotals.getNewVisitors()}, 6);
+        statisticTable.setPageLength(statisticTable.size());
     }
 }

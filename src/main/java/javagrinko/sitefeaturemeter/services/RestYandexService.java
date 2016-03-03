@@ -1,5 +1,6 @@
 package javagrinko.sitefeaturemeter.services;
 
+import javagrinko.sitefeaturemeter.dom.yandex.Accounts;
 import javagrinko.sitefeaturemeter.dom.yandex.Attendance;
 import javagrinko.sitefeaturemeter.dom.yandex.Counters;
 import org.slf4j.Logger;
@@ -24,9 +25,11 @@ public class RestYandexService implements YandexService {
     Logger logger = LoggerFactory.getLogger(RestYandexService.class);
 
     public static final String HOST_URL = "https://api-metrika.yandex.ru/";
+    public static final String NEW_HOST_URL = "https://beta.api-metrika.yandex.ru/";
 
     public static final String COUNTERS = "counters.json";
     public static final String ATTENDANCE = "stat/traffic/summary.json";
+    public static final String ACCOUNTS = "management/v1/accounts";
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -69,5 +72,14 @@ public class RestYandexService implements YandexService {
             attendances.add(body);
         }
         return attendances;
+    }
+
+    @Override
+    public Accounts getAccounts() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", "OAuth " + userService.getUser().getToken());
+        HttpEntity<Object> entity = new HttpEntity<>(httpHeaders);
+        ResponseEntity<Accounts> exchange = restTemplate.exchange(NEW_HOST_URL + ACCOUNTS, HttpMethod.GET, entity, Accounts.class);
+        return exchange.getBody();
     }
 }

@@ -29,38 +29,6 @@ public class Attendance {
 
     Links links;
 
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public Long getCounterId() {
-        return counterId;
-    }
-
-    public void setCounterId(Long counterId) {
-        this.counterId = counterId;
-    }
-
-    public Integer getDataCount() {
-        return dataCount;
-    }
-
-    public void setDataCount(Integer dataCount) {
-        this.dataCount = dataCount;
-    }
-
     public List<AttendanceData> getData() {
         return data;
     }
@@ -69,19 +37,11 @@ public class Attendance {
         this.data = data;
     }
 
-    public AttendanceTotals getTotals() {
-        return totals;
-    }
-
-    public void setTotals(AttendanceTotals totals) {
-        this.totals = totals;
-    }
-
     public Links getLinks() {
         return links;
     }
 
-    public void setLinks(Links links) {
-        this.links = links;
+    public AttendanceTotals getTotals() {
+        return totals;
     }
 }

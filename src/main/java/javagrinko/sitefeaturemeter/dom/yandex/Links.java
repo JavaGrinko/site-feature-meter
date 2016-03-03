@@ -8,7 +8,4 @@ public class Links {
         return next;
     }
 
-    public void setNext(String next) {
-        this.next = next;
-    }
 }

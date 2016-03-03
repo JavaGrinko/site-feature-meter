@@ -21,6 +21,18 @@ public class AttendanceTotals {
     @JsonProperty("new_visitors")
     Long newVisitors;
 
+    public AttendanceTotals minus(AttendanceTotals totals){
+        AttendanceTotals minusTotals = new AttendanceTotals();
+        minusTotals.setDepth(this.getDepth() - totals.getDepth());
+        minusTotals.setPageViews(this.getPageViews() - totals.getPageViews());
+        minusTotals.setVisits(this.getVisits() - totals.getVisits());
+        minusTotals.setVisitors(this.getVisitors() - totals.getVisitors());
+        minusTotals.setDenial(this.getDenial() - totals.getDenial());
+        minusTotals.setNewVisitors(this.getNewVisitors() - totals.getNewVisitors());
+        minusTotals.setVisitTime(this.getVisitTime() - totals.getVisitTime());
+        return minusTotals;
+    }
+
     public Double getDenial() {
         return denial;
     }

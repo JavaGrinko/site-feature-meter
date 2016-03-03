@@ -16,6 +16,4 @@ public interface ExperimentProcessor {
 
     List<AttendanceStatistic> getAttendanceStatisticEvolutionList(List<AttendanceData> attendances);
 
-    AttendanceData getAttendanceIntegral(List<AttendanceData> attendances);
-
 }

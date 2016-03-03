@@ -10,15 +10,4 @@ public class Counters {
         return counters;
     }
 
-    public void setCounters(List<Counter> counters) {
-        this.counters = counters;
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public void setRows(int rows) {
-        this.rows = rows;
-    }
 }

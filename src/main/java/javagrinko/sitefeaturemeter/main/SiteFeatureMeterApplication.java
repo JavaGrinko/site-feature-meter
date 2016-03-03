@@ -3,6 +3,7 @@ package javagrinko.sitefeaturemeter.main;
 import javagrinko.sitefeaturemeter.converters.YandexOAuthResponseConverter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,6 +15,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import java.util.HashSet;
 
 @SpringBootApplication
+@EnableConfigurationProperties(SiteFeatureMeterProperties.class)
 @EnableMongoRepositories(basePackages = "javagrinko.sitefeaturemeter")
 @ComponentScan("javagrinko.sitefeaturemeter")
 public class SiteFeatureMeterApplication extends SpringBootServletInitializer {

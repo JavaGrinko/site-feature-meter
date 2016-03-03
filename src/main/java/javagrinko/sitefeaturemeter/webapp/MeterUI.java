@@ -1,7 +1,6 @@
 package javagrinko.sitefeaturemeter.webapp;
 
 import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Widgetset;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
@@ -9,12 +8,13 @@ import com.vaadin.ui.*;
 import javagrinko.sitefeaturemeter.dom.Experiment;
 import javagrinko.sitefeaturemeter.dom.User;
 import javagrinko.sitefeaturemeter.dom.yandex.OAuthResponse;
+import javagrinko.sitefeaturemeter.main.SiteFeatureMeterProperties;
 import javagrinko.sitefeaturemeter.services.ExperimentProcessor;
 import javagrinko.sitefeaturemeter.services.ExperimentService;
 import javagrinko.sitefeaturemeter.services.UserService;
 import javagrinko.sitefeaturemeter.webapp.windows.LoginWindow;
-import javagrinko.sitefeaturemeter.webapp.windows.StatisticWindow;
 import javagrinko.sitefeaturemeter.webapp.windows.NewExperimentWindow;
+import javagrinko.sitefeaturemeter.webapp.windows.StatisticWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 
@@ -23,8 +23,11 @@ import java.util.List;
 
 @SpringUI
 @Theme("valo")
-@Widgetset("webapp.Widgetset")
+//@Widgetset("webapp.Widgetset")
 public class MeterUI extends UI {
+
+    @Autowired
+    private SiteFeatureMeterProperties siteProperties;
 
     @Autowired
     private LoginWindow loginWindow;
@@ -49,18 +52,34 @@ public class MeterUI extends UI {
 
     private Table experimentsTable;
     private Button addExperimentButton;
+    private Label versionLabel;
 
     @Override
     protected void init(VaadinRequest request) {
+
         VerticalLayout content = new VerticalLayout();
         setContent(content);
         content.setMargin(true);
         initLogin();
         initExperimentersTable();
         initAddExperimentButton();
+        initVersionLabel();
 
         content.addComponent(addExperimentButton);
         content.addComponent(experimentsTable);
+        content.addComponent(versionLabel);
+        content.setComponentAlignment(versionLabel, Alignment.BOTTOM_RIGHT);
+    }
+
+    private void initVersionLabel() {
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("Version ")
+                .append(siteProperties.getVersion())
+                .append(".").append(siteProperties.getSubVersion())
+                .append(" build ").append(siteProperties.getBuildVersion());
+        versionLabel = new Label(stringBuffer.toString());
+        versionLabel.setWidth("200px");
+        versionLabel.setHeight("100%");
     }
 
     private void initAddExperimentButton() {

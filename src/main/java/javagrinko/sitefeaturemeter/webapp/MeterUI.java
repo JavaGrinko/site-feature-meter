@@ -83,12 +83,12 @@ public class MeterUI extends UI {
     }
 
     private void initAddExperimentButton() {
-        addExperimentButton = new Button("+ Добавить новое нововведение");
+        addExperimentButton = new Button("+ Добавить эксперимент");
         addExperimentButton.addClickListener(e -> newExperimentWindow.show(this));
     }
 
     private void initExperimentersTable() {
-        experimentsTable = new Table("Нововведения");
+        experimentsTable = new Table("Эксперименты");
         experimentsTable.setSizeFull();
         experimentsTable.setSelectable(true);
         experimentsTable.setEditable(false);

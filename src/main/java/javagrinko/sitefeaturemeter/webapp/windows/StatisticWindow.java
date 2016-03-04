@@ -13,13 +13,17 @@ import javagrinko.sitefeaturemeter.services.YandexService;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.number.NumberStyleFormatter;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static java.lang.Math.abs;
 
 @Component
 public class StatisticWindow extends Window {
+
+    private final NumberStyleFormatter nsf = new NumberStyleFormatter();
 
     @Autowired
     private ExperimentProcessor experimentProcessor;
@@ -53,7 +57,8 @@ public class StatisticWindow extends Window {
         statisticTable.addContainerProperty("Parameter", String.class, null);
         statisticTable.addContainerProperty("Before", Number.class, null);
         statisticTable.addContainerProperty("After", Number.class, null);
-        statisticTable.addContainerProperty("Result", Number.class, null);
+        statisticTable.addContainerProperty("Result", String.class, null);
+        statisticTable.addContainerProperty("Real result", String.class, null);
         statisticTable.setSizeFull();
         statisticTable.setSelectable(true);
         statisticTable.setEditable(false);
@@ -80,14 +85,20 @@ public class StatisticWindow extends Window {
         AttendanceTotals totalsAfter = attendancesAfter.get(0).getTotals();
 
         AttendanceTotals deltaTotals = totalsAfter.minus(totalsBefore);
+        List<StatisticRow> rowList = new ArrayList<>();
+        rowList.add(new StatisticRow("Visitors", totalsBefore.getVisitors(), totalsAfter.getVisitors()));
+        rowList.add(new StatisticRow("Denial", totalsBefore.getDenial(), totalsAfter.getDenial()));
+        rowList.add(new StatisticRow("Visits", totalsBefore.getVisits(), totalsAfter.getVisits()));
+        rowList.add(new StatisticRow("Depth", totalsBefore.getDepth(), totalsAfter.getDepth()));
+        rowList.add(new StatisticRow("Page views", totalsBefore.getPageViews(), totalsAfter.getPageViews()));
+        rowList.add(new StatisticRow("Visit time", totalsBefore.getVisitTime(), totalsAfter.getVisitTime()));
+        rowList.add(new StatisticRow("New visitors", totalsBefore.getNewVisitors(), totalsAfter.getNewVisitors()));
 
-        statisticTable.addItem(new Object[]{"Visitors", totalsBefore.getVisitors(), totalsAfter.getVisitors(), deltaTotals.getVisitors()}, 0);
-        statisticTable.addItem(new Object[]{"Denial", totalsBefore.getDenial(), totalsAfter.getDenial(), deltaTotals.getDenial()}, 1);
-        statisticTable.addItem(new Object[]{"Visits", totalsBefore.getVisits(), totalsAfter.getVisits(), deltaTotals.getVisits()}, 2);
-        statisticTable.addItem(new Object[]{"Depth", totalsBefore.getDepth(), totalsAfter.getDepth(), deltaTotals.getDepth()}, 3);
-        statisticTable.addItem(new Object[]{"Page views", totalsBefore.getPageViews(), totalsAfter.getPageViews(), deltaTotals.getPageViews()}, 4);
-        statisticTable.addItem(new Object[]{"Visit time", totalsBefore.getVisitTime(), totalsAfter.getVisitTime(), deltaTotals.getVisitTime()}, 5);
-        statisticTable.addItem(new Object[]{"New visitors", totalsBefore.getNewVisitors(), totalsAfter.getNewVisitors(), deltaTotals.getNewVisitors()}, 6);
+        Collections.sort(rowList, (a,b) -> abs(a.getDeltaPercentage()) > abs(b.getDeltaPercentage()) ? -1 : 1);
+        for (int i = 0; i < rowList.size(); i++) {
+            StatisticRow it = rowList.get(i);
+            statisticTable.addItem(new Object[]{it.getName(), it.getValueBefore(), it.getValueAfter(), String.valueOf(nsf.print(it.getDelta(), Locale.ENGLISH) + " (" + nsf.print(it.getDeltaPercentage(), Locale.ENGLISH) + "%)"), String.valueOf(nsf.print(it.getDeltaWithNoise(), Locale.ENGLISH) + " (" + nsf.print(it.getDeltaWithNoisePercentage(), Locale.ENGLISH) + "%)")}, i);
+        }
         statisticTable.setPageLength(statisticTable.size());
     }
 }

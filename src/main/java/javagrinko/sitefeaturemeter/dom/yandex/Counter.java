@@ -25,4 +25,7 @@ public class Counter {
         this.id = id;
     }
 
+    public String getSiteName() {
+        return siteName;
+    }
 }

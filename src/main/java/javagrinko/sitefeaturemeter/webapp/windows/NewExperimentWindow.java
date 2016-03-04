@@ -20,9 +20,10 @@ import java.util.Iterator;
 @UIScope
 public class NewExperimentWindow extends Window implements ClientConnector.AttachListener {
 
-    public static final String CAPTION = "Добавить нововвдение";
+    public static final String CAPTION = "Добавить эксперимент";
 
     private TextField descriptionTextField;
+    private TextField emailTextField;
     private PopupDateField dateField;
     private ComboBox counterComboBox;
     private Button submitButton;
@@ -37,7 +38,7 @@ public class NewExperimentWindow extends Window implements ClientConnector.Attac
 
     public NewExperimentWindow() {
         super(CAPTION);
-        setHeight("330px");
+        setHeight("400px");
         setWidth("300px");
         center();
         content = new VerticalLayout();
@@ -52,10 +53,18 @@ public class NewExperimentWindow extends Window implements ClientConnector.Attac
         initDateField();
         initCounterComboBox();
         initSubmitButton();
+        initEmailTextField();
         content.addComponent(descriptionTextField);
         content.addComponent(dateField);
         content.addComponent(counterComboBox);
+        content.addComponent(emailTextField);
         content.addComponent(submitButton);
+    }
+
+    private void initEmailTextField() {
+        emailTextField = new TextField("E-mail для оповещения");
+        emailTextField.setWidth("100%");
+        emailTextField.setRequired(true);
     }
 
     private void initSubmitButton() {
@@ -103,7 +112,7 @@ public class NewExperimentWindow extends Window implements ClientConnector.Attac
     }
 
     private void initDescriptionTextField() {
-        descriptionTextField = new TextField("Описание нововведения");
+        descriptionTextField = new TextField("Описание эксперимента");
         descriptionTextField.setWidth("100%");
         descriptionTextField.setRequired(true);
     }
